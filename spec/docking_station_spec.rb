@@ -7,7 +7,7 @@ describe DockingStation do
   it 'releases working bikes' do
     bike = Bike.new
     subject.docks_bikes(bike)
-    expect(subject.release_bikes).to be_working
+    expect(subject.release_bikes.working).to eq true
   end
 
   it 'responds to docks_bikes' do
@@ -42,5 +42,12 @@ describe DockingStation do
 
   it 'defaults to a capacity of 20' do
     expect(subject.capacity).to eq DockingStation::DEFAULT_CAPACITY
+  end
+
+  it 'should say the bike is broken' do
+    b = Bike.new
+    b.broken
+    subject.docks_bikes(b)
+    expect(subject.release_bikes.working).to eq false
   end
 end
