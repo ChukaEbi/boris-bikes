@@ -10,7 +10,9 @@ class DockingStation
 
   def release_bikes
     raise StandardError, "No Bike Available" unless !empty?
-    @bikes.pop
+    bike = nil
+    @bikes.each {|b| bike = b if b.working }
+    bike
   end
 
   def docks_bikes(b)
