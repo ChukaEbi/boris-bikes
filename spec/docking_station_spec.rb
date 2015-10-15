@@ -1,13 +1,15 @@
 require 'DockingStation'
 describe DockingStation do
+  let(:bike) {double :bike}
+
   it 'responds to release bikes' do
     expect(subject).to respond_to :release_bikes
   end
-
   it 'releases working bikes' do
-    bike = Bike.new
+    allow(bike).to receive(:working).and_return(true)
     subject.docks_bikes(bike)
-    expect(subject.release_bikes.working).to eq true
+    b = subject.release_bikes
+    expect(b.working).to eq true
   end
 
   it 'responds to docks_bikes' do
@@ -15,15 +17,13 @@ describe DockingStation do
   end
 
   it 'docks bikes' do
-    bi = Bike.new
-    subject.docks_bikes(bi)
-    expect(subject.bikes).to include(bi)
+    subject.docks_bikes(bike)
+    expect(subject.bikes).to include(bike)
   end
 
   it 'shows docked bikes' do
-    bi = Bike.new
-    subject.docks_bikes(bi)
-    expect(subject.show).to eq bi
+    subject.docks_bikes(bike)
+    expect(subject.show).to eq (bike)
   end
 
   it 'expects a No Bike Available error' do
@@ -31,8 +31,8 @@ describe DockingStation do
   end
 
   it 'expects a Station at Capacity error' do
-    DockingStation::DEFAULT_CAPACITY.times{subject.docks_bikes(Bike.new)}
-    expect {subject.docks_bikes(Bike.new)}.to raise_error("Station at Capacity")
+    DockingStation::DEFAULT_CAPACITY.times{subject.docks_bikes(bike)}
+    expect {subject.docks_bikes(bike)}.to raise_error("Station at Capacity")
   end
 
   it 'initializing can take up to one argument' do
@@ -45,9 +45,10 @@ describe DockingStation do
   end
 
   it 'should not release a broken bike' do
-    b = Bike.new
-    b.broken
-    subject.docks_bikes(b)
+    allow(bike).to receive(:broken).and_return(false)
+    allow(bike).to receive(:working).and_return(false)
+    bike.broken
+    subject.docks_bikes(bike)
     expect(subject.release_bikes).to eq nil
   end
 end
